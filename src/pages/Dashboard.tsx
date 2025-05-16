@@ -6,6 +6,8 @@ import { Award, BookOpen, CheckCircle, ChevronRight } from "lucide-react";
 import Header from "@/components/Header";
 import Sidebar from "@/components/Sidebar";
 import ProgressChart from "@/components/ProgressChart";
+import SkillGraph from "@/components/SkillGraph";
+import ProfileStats from "@/components/ProfileStats";
 import { userProgressData, currentUser } from "@/lib/data";
 import { Link } from "react-router-dom";
 
@@ -39,7 +41,14 @@ const Dashboard = () => {
       <div className="flex flex-1">
         <Sidebar isOpen={isSidebarOpen} />
         <main className={`flex-1 p-6 transition-all duration-300 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-16'}`}>
-          <h1 className="text-2xl font-bold mb-6">Dashboard</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+            <ProfileStats 
+              name={currentUser.name} 
+              points={currentUser.points}
+              avatarUrl="/placeholder.svg"
+            />
+          </div>
           
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -83,6 +92,9 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
+          
+          {/* Skill Graph */}
+          <SkillGraph />
           
           {/* Progress Chart */}
           <div className="mb-8">

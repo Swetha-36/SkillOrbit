@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, Menu, X } from "lucide-react";
+import { Bell, Flame, Menu, X, Zap } from "lucide-react";
 import { currentUser } from "@/lib/data";
 
 interface HeaderProps {
@@ -13,6 +13,8 @@ interface HeaderProps {
 
 export function Header({ toggleSidebar, isSidebarOpen }: HeaderProps) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const streakDays = 8; // Sample data - this would come from your user data
+  const isLongStreak = streakDays > 7; // Check if streak is longer than 7 days
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
@@ -47,6 +49,20 @@ export function Header({ toggleSidebar, isSidebarOpen }: HeaderProps) {
         </nav>
 
         <div className="flex items-center space-x-4">
+          {/* Streak Counter */}
+          <div className="hidden md:flex items-center rounded-full bg-orange-50 px-3 py-1.5 text-sm font-medium">
+            <Flame className={`mr-1 h-4 w-4 ${isLongStreak ? 'text-yellow-500' : 'text-orange-500'}`} />
+            <span className={`${isLongStreak ? 'text-yellow-600' : 'text-orange-700'}`}>
+              {streakDays}-day streak
+            </span>
+          </div>
+
+          {/* XP Points */}
+          <div className="hidden md:flex items-center rounded-full bg-skillsprint-50 px-3 py-1.5 text-sm font-medium">
+            <Zap className="mr-1 h-4 w-4 text-skillsprint-500" />
+            <span className="text-skillsprint-700">{currentUser.points} XP</span>
+          </div>
+
           <Button variant="ghost" size="icon" className="relative">
             <Bell size={20} />
             <span className="absolute top-0 right-0 h-2 w-2 bg-skillsprint-500 rounded-full"></span>
@@ -98,6 +114,25 @@ export function Header({ toggleSidebar, isSidebarOpen }: HeaderProps) {
             >
               HackBuddy
             </Link>
+            
+            {/* Mobile Streak Counter */}
+            <div className="flex items-center py-2 px-4">
+              <div className="flex items-center rounded-full bg-orange-50 px-3 py-1.5 text-sm font-medium">
+                <Flame className={`mr-1 h-4 w-4 ${isLongStreak ? 'text-yellow-500' : 'text-orange-500'}`} />
+                <span className={`${isLongStreak ? 'text-yellow-600' : 'text-orange-700'}`}>
+                  {streakDays}-day streak
+                </span>
+              </div>
+            </div>
+            
+            {/* Mobile XP Points */}
+            <div className="flex items-center py-2 px-4">
+              <div className="flex items-center rounded-full bg-skillsprint-50 px-3 py-1.5 text-sm font-medium">
+                <Zap className="mr-1 h-4 w-4 text-skillsprint-500" />
+                <span className="text-skillsprint-700">{currentUser.points} XP</span>
+              </div>
+            </div>
+            
             <div className="flex items-center space-x-2 py-2 px-4">
               <Avatar>
                 <AvatarImage src={`https://i.pravatar.cc/150?img=3`} alt={currentUser.name} />

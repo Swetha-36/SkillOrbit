@@ -13,6 +13,7 @@ import Leaderboard from "./pages/Leaderboard";
 import HackBuddy from "./pages/HackBuddy";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import Roadmap from "./pages/Roadmap";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/courses/:id" element={<CourseDetails />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/hackbuddy" element={<HackBuddy />} />
+          <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<NotFound />} />

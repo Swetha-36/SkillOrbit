@@ -8,6 +8,7 @@ import Sidebar from "@/components/Sidebar";
 import ProgressChart from "@/components/ProgressChart";
 import SkillGraph from "@/components/SkillGraph";
 import ProfileStats from "@/components/ProfileStats";
+import AIChat from "@/components/AIChat";
 import { userProgressData, currentUser } from "@/lib/data";
 import { Link } from "react-router-dom";
 
@@ -135,6 +136,9 @@ const Dashboard = () => {
           </div>
         </main>
       </div>
+      
+      {/* AI Chat Component */}
+      <AIChat />
     </div>
   );
 };

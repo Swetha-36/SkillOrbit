@@ -8,6 +8,7 @@ import {
   BarChart,
   Calendar,
   Settings,
+  Map,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -23,10 +24,11 @@ export function Sidebar({ isOpen }: SidebarProps) {
 
   const sidebarItems = [
     { path: "/", label: "Home", icon: Home },
-    { path: "/dashboard", label: "Dashboard", icon: BarChart },
+    { path: "/roadmap", label: "Roadmap", icon: Map },
     { path: "/courses", label: "Courses", icon: BookOpen },
     { path: "/leaderboard", label: "Leaderboard", icon: Award },
     { path: "/hackbuddy", label: "HackBuddy", icon: Calendar },
+    { path: "/dashboard", label: "Dashboard", icon: BarChart },
   ];
 
   return (
@@ -42,15 +44,32 @@ export function Sidebar({ isOpen }: SidebarProps) {
             key={item.path}
             to={item.path}
             className={cn(
-              "flex items-center px-3 py-2 rounded-md transition-colors",
+              "flex items-center px-3 py-2 rounded-md transition-all duration-200",
               isActive(item.path)
                 ? "bg-skillsprint-100 text-skillsprint-700"
                 : "text-gray-700 hover:bg-gray-100",
               !isOpen && "md:justify-center"
             )}
           >
-            <item.icon size={20} className={!isOpen ? "mx-auto" : ""} />
-            {isOpen && <span className="ml-3">{item.label}</span>}
+            <item.icon 
+              size={20} 
+              className={cn(
+                !isOpen ? "mx-auto" : "mr-3",
+                isActive(item.path) && "text-skillsprint-600"
+              )} 
+            />
+            {isOpen && (
+              <span className={cn(
+                "transition-opacity duration-200",
+                isActive(item.path) ? "font-medium" : ""
+              )}>
+                {item.label}
+              </span>
+            )}
+            
+            {isActive(item.path) && isOpen && (
+              <div className="ml-auto h-2 w-2 rounded-full bg-skillsprint-500"></div>
+            )}
           </Link>
         ))}
       </nav>
@@ -63,8 +82,8 @@ export function Sidebar({ isOpen }: SidebarProps) {
             !isOpen && "md:justify-center"
           )}
         >
-          <Settings size={20} className={!isOpen ? "mx-auto" : ""} />
-          {isOpen && <span className="ml-3">Settings</span>}
+          <Settings size={20} className={!isOpen ? "mx-auto" : "mr-3"} />
+          {isOpen && <span>Settings</span>}
         </Link>
       </div>
     </aside>

@@ -12,6 +12,11 @@ interface ProfileStatsProps {
 const ProfileStats = ({ name, points, avatarUrl }: ProfileStatsProps) => {
   return (
     <div className="flex items-center gap-4">
+      <div className="hidden md:block text-sm font-medium text-right pr-2">
+        <div className="font-semibold">{name}</div>
+        <div className="text-xs text-gray-500">Student</div>
+      </div>
+      
       <Avatar className="h-10 w-10 border-2 border-skillsprint-200">
         <AvatarImage src={avatarUrl} alt={name} />
         <AvatarFallback className="bg-skillsprint-100 text-skillsprint-700">

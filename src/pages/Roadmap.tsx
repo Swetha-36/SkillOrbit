@@ -1,15 +1,19 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import AIChat from '@/components/AIChat';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, BookOpen, CheckCircle, Lock } from 'lucide-react';
+import { ArrowRight, BookOpen, CheckCircle, Lock, ArrowUpRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import AIRoadmapGenerator from '@/components/AIRoadmapGenerator';
+import DomainSelector from '@/components/DomainSelector';
+import RoadmapLevelItem from '@/components/RoadmapLevelItem';
+import { Button } from '@/components/ui/button';
 
-// Sample roadmap data
-const roadmapData = [
+// Initial roadmap data
+const initialRoadmapData = [
   {
     id: 1,
     title: "Web Development Fundamentals",
@@ -51,8 +55,106 @@ const roadmapData = [
   }
 ];
 
+// Domain-specific roadmaps (simplified mock data)
+const domainRoadmaps: Record<string, any[]> = {
+  'web-dev': initialRoadmapData,
+  'backend': [
+    {
+      id: 4,
+      title: "Backend Engineering Fundamentals",
+      description: "Core concepts of server-side development",
+      progress: 20,
+      stages: [
+        { id: 1, name: "Server Architecture", completed: true, locked: false },
+        { id: 2, name: "API Development", completed: false, locked: false },
+        { id: 3, name: "Database Design", completed: false, locked: false },
+        { id: 4, name: "Authentication", completed: false, locked: true },
+        { id: 5, name: "Deployment & DevOps", completed: false, locked: true }
+      ]
+    }
+  ],
+  'ai-ml': [
+    {
+      id: 5,
+      title: "Machine Learning Foundations",
+      description: "Core ML concepts and algorithms",
+      progress: 10,
+      stages: [
+        { id: 1, name: "Python for ML", completed: true, locked: false },
+        { id: 2, name: "Statistical Foundations", completed: false, locked: false },
+        { id: 3, name: "Supervised Learning", completed: false, locked: false },
+        { id: 4, name: "Deep Learning Basics", completed: false, locked: true },
+        { id: 5, name: "ML Deployment", completed: false, locked: true }
+      ]
+    }
+  ]
+};
+
 const Roadmap = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [roadmapData, setRoadmapData] = useState(initialRoadmapData);
+  const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
+
+  // Load roadmaps from localStorage on component mount
+  useEffect(() => {
+    const savedRoadmaps = localStorage.getItem('skillsprint-roadmaps');
+    if (savedRoadmaps) {
+      try {
+        setRoadmapData(JSON.parse(savedRoadmaps));
+      } catch (e) {
+        console.error('Failed to parse saved roadmaps', e);
+      }
+    }
+  }, []);
+
+  // Save roadmaps to localStorage when they change
+  useEffect(() => {
+    localStorage.setItem('skillsprint-roadmaps', JSON.stringify(roadmapData));
+  }, [roadmapData]);
+
+  const handleDomainSelect = (domainId: string) => {
+    setSelectedDomain(domainId);
+    if (domainRoadmaps[domainId]) {
+      setRoadmapData(domainRoadmaps[domainId]);
+    }
+  };
+
+  const handleRoadmapGenerated = (newRoadmap: any) => {
+    setRoadmapData(prev => [newRoadmap, ...prev]);
+  };
+
+  const handleCompleteLevel = (roadmapId: number, levelId: number) => {
+    setRoadmapData(prev => 
+      prev.map(roadmap => {
+        if (roadmap.id === roadmapId) {
+          const updatedStages = roadmap.stages.map(stage => 
+            stage.id === levelId ? { ...stage, completed: true } : stage
+          );
+          
+          // Unlock the next level if it exists
+          const currentLevelIndex = updatedStages.findIndex(stage => stage.id === levelId);
+          if (currentLevelIndex < updatedStages.length - 1) {
+            updatedStages[currentLevelIndex + 1] = {
+              ...updatedStages[currentLevelIndex + 1],
+              locked: false
+            };
+          }
+          
+          // Calculate new progress
+          const totalLevels = updatedStages.length;
+          const completedLevels = updatedStages.filter(stage => stage.completed).length;
+          const newProgress = Math.round((completedLevels / totalLevels) * 100);
+          
+          return {
+            ...roadmap,
+            stages: updatedStages,
+            progress: newProgress
+          };
+        }
+        return roadmap;
+      })
+    );
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -66,10 +168,24 @@ const Roadmap = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Learning Roadmaps</h1>
             <p className="text-gray-600">
-              Follow structured learning paths to master new skills step-by-step
+              Personalized learning paths to help you master new skills step-by-step
             </p>
           </div>
           
+          {/* Domain Selector */}
+          <DomainSelector onDomainSelect={handleDomainSelect} />
+          
+          {/* AI Roadmap Generator */}
+          <AIRoadmapGenerator onRoadmapGenerated={handleRoadmapGenerated} />
+          
+          {/* View Growth Link */}
+          <div className="mb-4 flex justify-end">
+            <Button variant="link" className="text-skillsprint-600 font-medium p-0">
+              View Your Growth <ArrowUpRight size={16} className="ml-1" />
+            </Button>
+          </div>
+          
+          {/* Roadmaps */}
           <div className="space-y-8">
             {roadmapData.map((roadmap) => (
               <Card key={roadmap.id} className="shadow-md hover:shadow-lg transition-shadow duration-300">
@@ -88,38 +204,13 @@ const Roadmap = () => {
                 
                 <CardContent>
                   <ul className="divide-y divide-gray-100 mt-2">
-                    {roadmap.stages.map((stage) => (
-                      <li 
-                        key={stage.id} 
-                        className={`py-3 px-2 rounded-md flex justify-between items-center ${
-                          stage.locked ? 'opacity-60' : 'hover:bg-gray-50'
-                        }`}
-                      >
-                        <div className="flex items-center">
-                          {stage.completed ? (
-                            <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                          ) : stage.locked ? (
-                            <Lock className="h-5 w-5 text-gray-400 mr-3" />
-                          ) : (
-                            <BookOpen className="h-5 w-5 text-skillsprint-500 mr-3" />
-                          )}
-                          <span className={stage.completed ? 'font-medium' : ''}>
-                            {stage.name}
-                          </span>
-                        </div>
-                        
-                        {!stage.locked && (
-                          <button 
-                            className={`rounded-full p-1 ${
-                              stage.completed 
-                                ? 'text-green-500 hover:bg-green-50' 
-                                : 'text-skillsprint-500 hover:bg-skillsprint-50'
-                            }`}
-                          >
-                            <ArrowRight className="h-5 w-5" />
-                          </button>
-                        )}
-                      </li>
+                    {roadmap.stages.map((stage, index) => (
+                      <RoadmapLevelItem 
+                        key={stage.id}
+                        level={stage}
+                        order={index + 1}
+                        onComplete={(levelId) => handleCompleteLevel(roadmap.id, levelId)}
+                      />
                     ))}
                   </ul>
                 </CardContent>

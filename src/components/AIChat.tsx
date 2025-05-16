@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { MessageSquare, Send } from "lucide-react";
+import { MessageSquare, Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -14,9 +14,15 @@ interface Message {
 const AIChat = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, content: "Hi there! How can I help you with your learning journey today?", isAI: true, timestamp: new Date() },
+    { 
+      id: 1, 
+      content: "Hi there! I'm your SkillSprint AI assistant. How can I help with your learning journey today?", 
+      isAI: true, 
+      timestamp: new Date() 
+    },
   ]);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -35,8 +41,51 @@ const AIChat = () => {
     }
   }, [isOpen, messages]);
 
+  // Mock AI responses based on user input
+  const generateAIResponse = async (userMessage: string): Promise<string> => {
+    // Wait to simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const lowerCaseMessage = userMessage.toLowerCase();
+    
+    // Roadmap related responses
+    if (lowerCaseMessage.includes('roadmap') || lowerCaseMessage.includes('learning path')) {
+      if (lowerCaseMessage.includes('web') || lowerCaseMessage.includes('frontend') || lowerCaseMessage.includes('developer')) {
+        return "I've created a Web Development roadmap for you! Here are the key stages:\n\n1. **Fundamentals**: HTML, CSS, JavaScript basics\n2. **Frontend Frameworks**: React, Vue, or Angular\n3. **State Management**: Redux, Context API\n4. **Backend Integration**: APIs, Authentication\n5. **Deployment & Performance**: Optimize and deploy your apps\n\nWould you like me to add this roadmap to your dashboard?";
+      }
+      
+      if (lowerCaseMessage.includes('ai') || lowerCaseMessage.includes('machine learning') || lowerCaseMessage.includes('ml')) {
+        return "Here's a Machine Learning roadmap I've designed for you:\n\n1. **Foundations**: Python, Statistics, Linear Algebra\n2. **ML Basics**: Supervised Learning, Regression, Classification\n3. **Deep Learning**: Neural Networks, CNN, RNN\n4. **Specializations**: NLP, Computer Vision, Reinforcement Learning\n5. **Deployment**: MLOps, Model Serving\n\nWould you like to start with this roadmap?";
+      }
+      
+      return "I'd be happy to create a custom roadmap for you! Could you tell me more specifically what skill or technology you're interested in learning?";
+    }
+    
+    // Resources related responses
+    if (lowerCaseMessage.includes('resource') || lowerCaseMessage.includes('course') || lowerCaseMessage.includes('tutorial')) {
+      return "Here are some excellent free resources I recommend:\n\n• **freeCodeCamp**: Comprehensive web development curriculum\n• **Coursera** (audit option): University-level courses\n• **YouTube**: Check out channels like Traversy Media, The Net Ninja\n• **MDN Web Docs**: For web technologies reference\n• **Khan Academy**: For computer science fundamentals\n\nAny specific topic you're looking for?";
+    }
+    
+    // Quiz related responses
+    if (lowerCaseMessage.includes('quiz') || lowerCaseMessage.includes('test') || lowerCaseMessage.includes('assessment')) {
+      return "Quizzes are a great way to test your knowledge! Each level in your roadmap includes a quiz that awards 15 points when you pass. Would you like me to create a practice quiz on a specific topic to help you prepare?";
+    }
+    
+    // General responses
+    if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi ')) {
+      return "Hello! I'm your SkillSprint AI assistant. I can help you create custom learning roadmaps, find resources, or answer questions about your learning journey. What would you like to explore today?";
+    }
+    
+    if (lowerCaseMessage.includes('thank')) {
+      return "You're welcome! Remember, I'm here to help you succeed in your learning journey. Don't hesitate to ask if you need any more assistance!";
+    }
+    
+    // Default response
+    return "Thanks for your message! I can help you with creating custom roadmaps, finding learning resources, understanding concepts, or tracking your progress. How can I assist with your learning goals today?";
+  };
+
   // Send message
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (input.trim() === "") return;
     
     // Add user message
@@ -49,17 +98,48 @@ const AIChat = () => {
     
     setMessages((prev) => [...prev, newUserMessage]);
     setInput("");
+    setIsTyping(true);
     
-    // Simulate AI response after a short delay
-    setTimeout(() => {
+    try {
+      // Generate AI response
+      const aiResponseText = await generateAIResponse(input);
+      
+      // Add AI response
       const aiResponse: Message = {
         id: messages.length + 2,
-        content: "Thanks for your message! This is a simulated response from SkillSprint AI. In a real implementation, this would be connected to your AI service.",
+        content: aiResponseText,
         isAI: true,
         timestamp: new Date(),
       };
+      
       setMessages((prev) => [...prev, aiResponse]);
-    }, 1000);
+    } catch (error) {
+      console.error("Error generating AI response:", error);
+      
+      // Add error message
+      const errorResponse: Message = {
+        id: messages.length + 2,
+        content: "I'm sorry, I encountered an error processing your request. Please try again later.",
+        isAI: true,
+        timestamp: new Date(),
+      };
+      
+      setMessages((prev) => [...prev, errorResponse]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  // Format message content with markdown-like syntax
+  const formatMessage = (content: string) => {
+    // Replace markdown-style bold with HTML
+    const withBold = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Replace newlines with line breaks
+    const withLineBreaks = withBold.replace(/\n/g, '<br>');
+    
+    // Return as HTML
+    return <div dangerouslySetInnerHTML={{ __html: withLineBreaks }} />;
   };
 
   return (
@@ -82,7 +162,7 @@ const AIChat = () => {
           <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
             <div className="flex items-center space-x-2">
               <div className="rounded-full bg-skillsprint-100 p-2">
-                <MessageSquare className="h-5 w-5 text-skillsprint-500" />
+                <Sparkles className="h-5 w-5 text-skillsprint-500" />
               </div>
               <h3 className="font-medium">Ask SkillSprint AI</h3>
             </div>
@@ -119,13 +199,32 @@ const AIChat = () => {
                         <span className="text-xs font-medium">SkillSprint AI</span>
                       </div>
                     )}
-                    <p className="text-sm">{message.content}</p>
+                    <div className="text-sm">{formatMessage(message.content)}</div>
                     <div className="mt-1 text-right text-xs opacity-70">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </div>
                   </div>
                 </div>
               ))}
+              
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="rounded-2xl rounded-tl-none bg-gray-100 px-4 py-2 text-gray-800">
+                    <div className="mb-1 flex items-center">
+                      <Avatar className="mr-2 h-5 w-5">
+                        <AvatarFallback className="bg-skillsprint-200 text-skillsprint-700 text-xs">AI</AvatarFallback>
+                      </Avatar>
+                      <span className="text-xs font-medium">SkillSprint AI</span>
+                    </div>
+                    <div className="flex space-x-1">
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "0.2s" }}></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "0.4s" }}></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
               <div ref={messagesEndRef} />
             </div>
           </div>
@@ -144,13 +243,15 @@ const AIChat = () => {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Type your message..."
+                placeholder="Ask about roadmaps, courses..."
                 className="flex-1 rounded-full border border-gray-300 px-4 py-2 text-sm focus:border-skillsprint-500 focus:outline-none"
+                disabled={isTyping}
               />
               <Button 
                 type="submit" 
                 size="icon" 
                 className="rounded-full bg-skillsprint-500 hover:bg-skillsprint-600"
+                disabled={isTyping || !input.trim()}
               >
                 <Send className="h-4 w-4" />
               </Button>

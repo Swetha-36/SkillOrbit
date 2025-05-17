@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import FullStackRoadmap from '@/components/FullStackRoadmap';
 import PaymentModal from '@/components/PaymentModal'; 
+import AIChat from '@/components/AIChat';
 
 const WebDevRoadmap = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -43,6 +44,7 @@ const WebDevRoadmap = () => {
         onSuccess={handlePaymentSuccess}
         level={selectedLevel}
       />
+      <AIChat />
     </div>
   );
 };

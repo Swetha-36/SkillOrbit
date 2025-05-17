@@ -16,6 +16,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Roadmap from "./pages/Roadmap";
 import Profile from "./pages/Profile";
+import WebDevRoadmap from "./pages/WebDevRoadmap";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/roadmap" element={<Roadmap />} />
+            <Route path="/webdev-roadmap" element={<WebDevRoadmap />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetails />} />

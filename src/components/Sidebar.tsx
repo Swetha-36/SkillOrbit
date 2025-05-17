@@ -3,13 +3,15 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useContext } from "react";
 import {
-  Home,
-  Map,
   BarChart,
+  Map,
+  BookOpen,
+  Award,
+  Users,
   User,
-  Settings,
   Moon,
   Sun,
+  Settings,
 } from "lucide-react";
 import { ThemeContext } from "@/contexts/ThemeContext";
 
@@ -25,10 +27,13 @@ export function Sidebar({ isOpen }: SidebarProps) {
     return location.pathname === path;
   };
 
-  // Simplified navigation items
+  // Navigation items with icons
   const sidebarItems = [
     { path: "/dashboard", label: "Dashboard", icon: BarChart },
     { path: "/roadmap", label: "Roadmap", icon: Map },
+    { path: "/courses", label: "Courses", icon: BookOpen },
+    { path: "/leaderboard", label: "Leaderboard", icon: Award },
+    { path: "/hackbuddy", label: "HackBuddy", icon: Users },
     { path: "/profile", label: "Profile", icon: User },
   ];
 

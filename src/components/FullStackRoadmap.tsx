@@ -1,12 +1,37 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Clock, Code, FileText, Youtube } from 'lucide-react';
+import { BookOpen, Clock, Code, FileText, Youtube, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const FullStackRoadmap = () => {
+interface FullStackRoadmapProps {
+  onUnlockLevel?: (level: string) => void;
+}
+
+const FullStackRoadmap: React.FC<FullStackRoadmapProps> = ({ onUnlockLevel }) => {
+  const [paidLevels, setPaidLevels] = useState<Record<string, boolean>>({});
+  
+  // Check which levels are paid for
+  useEffect(() => {
+    const storedPaidLevels = localStorage.getItem('paidLevels');
+    if (storedPaidLevels) {
+      setPaidLevels(JSON.parse(storedPaidLevels));
+    }
+  }, []);
+
+  // Determine if a level is accessible
+  const isLevelAccessible = (level: string) => {
+    if (level === 'beginner') return true;
+    return paidLevels[level] === true;
+  };
+
+  const handleUnlockClick = (level: string) => {
+    if (onUnlockLevel) {
+      onUnlockLevel(level);
+    }
+  };
+  
   return (
     <div className="space-y-6">
       <div className="mb-6">
@@ -20,11 +45,17 @@ const FullStackRoadmap = () => {
       <Tabs defaultValue="beginner" className="w-full">
         <TabsList className="grid grid-cols-3 mb-8">
           <TabsTrigger value="beginner">Beginner</TabsTrigger>
-          <TabsTrigger value="intermediate">Intermediate</TabsTrigger>
-          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+          <TabsTrigger value="intermediate">
+            Intermediate
+            {!isLevelAccessible('intermediate') && <Lock size={14} className="ml-1" />}
+          </TabsTrigger>
+          <TabsTrigger value="advanced">
+            Advanced
+            {!isLevelAccessible('advanced') && <Lock size={14} className="ml-1" />}
+          </TabsTrigger>
         </TabsList>
 
-        {/* Beginner Level */}
+        {/* Beginner Level - Always accessible */}
         <TabsContent value="beginner" className="space-y-6">
           <Card>
             <CardHeader>
@@ -42,7 +73,6 @@ const FullStackRoadmap = () => {
               </div>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Key Concepts */}
               <div>
                 <h3 className="text-lg font-semibold mb-2">Key Concepts to Learn</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -63,7 +93,6 @@ const FullStackRoadmap = () => {
                 </div>
               </div>
 
-              {/* Resources */}
               <div>
                 <h3 className="text-lg font-semibold mb-2">Free Resources</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -126,7 +155,6 @@ const FullStackRoadmap = () => {
                 </div>
               </div>
 
-              {/* Projects */}
               <div>
                 <h3 className="text-lg font-semibold mb-2">Projects & Challenges</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -165,7 +193,6 @@ const FullStackRoadmap = () => {
                 </div>
               </div>
 
-              {/* Quiz */}
               <div>
                 <h3 className="text-lg font-semibold mb-4">Knowledge Check Quiz</h3>
                 <div className="space-y-4 bg-gray-50 dark:bg-gray-800 p-5 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -202,7 +229,6 @@ const FullStackRoadmap = () => {
                 </div>
               </div>
 
-              {/* Tips */}
               <div>
                 <h3 className="text-lg font-semibold mb-2">Tips Before Starting</h3>
                 <ul className="list-disc list-inside space-y-2 text-gray-700 dark:text-gray-300">
@@ -217,107 +243,139 @@ const FullStackRoadmap = () => {
           </Card>
         </TabsContent>
 
-        {/* Intermediate Level */}
+        {/* Intermediate Level - Requires payment */}
         <TabsContent value="intermediate" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
+          {isLevelAccessible('intermediate') ? (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <Badge variant="outline" className="mb-2 bg-blue-50 text-blue-700 border-blue-200">
+                      Intermediate Level
+                    </Badge>
+                    <CardTitle className="text-2xl">Frontend & Backend Frameworks</CardTitle>
+                  </div>
+                  <div className="flex items-center text-gray-500 dark:text-gray-400">
+                    <Clock size={18} className="mr-1" />
+                    <span>Estimated: 8-10 weeks</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
                 <div>
-                  <Badge variant="outline" className="mb-2 bg-blue-50 text-blue-700 border-blue-200">
-                    Intermediate Level
-                  </Badge>
-                  <CardTitle className="text-2xl">Frontend & Backend Frameworks</CardTitle>
+                  <h3 className="text-lg font-semibold mb-2">Key Concepts to Learn</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                      <li>JavaScript ES6+ features</li>
+                      <li>React.js or Vue.js fundamentals</li>
+                      <li>State management</li>
+                      <li>Frontend routing</li>
+                      <li>API integration and Fetch/Axios</li>
+                    </ul>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                      <li>Node.js basics</li>
+                      <li>Express.js framework</li>
+                      <li>RESTful API design</li>
+                      <li>Database basics (MongoDB or SQL)</li>
+                      <li>Authentication fundamentals</li>
+                    </ul>
+                  </div>
                 </div>
-                <div className="flex items-center text-gray-500 dark:text-gray-400">
-                  <Clock size={18} className="mr-1" />
-                  <span>Estimated: 8-10 weeks</span>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Key Concepts */}
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Key Concepts to Learn</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-                    <li>JavaScript ES6+ features</li>
-                    <li>React.js or Vue.js fundamentals</li>
-                    <li>State management</li>
-                    <li>Frontend routing</li>
-                    <li>API integration and Fetch/Axios</li>
-                  </ul>
-                  <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-                    <li>Node.js basics</li>
-                    <li>Express.js framework</li>
-                    <li>RESTful API design</li>
-                    <li>Database basics (MongoDB or SQL)</li>
-                    <li>Authentication fundamentals</li>
-                  </ul>
-                </div>
-              </div>
 
-              {/* Resources section would continue in a similar format */}
-              
-              {/* For brevity, I'm not including the full intermediate and advanced sections, 
-                  but they would follow the same structure as the beginner section */}
-              
-              <div className="text-center py-4">
-                <Badge variant="outline" className="mb-2">Preview</Badge>
-                <p className="text-gray-500 dark:text-gray-400">
-                  The intermediate section includes resources for learning React, Node.js, Express, databases, and building full-stack applications.
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Resources section would continue in a similar format</h3>
+                  <div className="text-center py-4">
+                    <Badge variant="outline" className="mb-2">Preview</Badge>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      The intermediate section includes resources for learning React, Node.js, Express, databases, and building full-stack applications.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <Lock size={64} className="text-gray-400 mb-4" />
+                <h2 className="text-2xl font-bold mb-2 text-center">Unlock Intermediate Level</h2>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-6 max-w-md">
+                  Continue your learning journey by unlocking the Intermediate Level for just ₹49. Get access to frontend and backend frameworks, API integration, and more.
                 </p>
-              </div>
-            </CardContent>
-          </Card>
+                <Button 
+                  onClick={() => handleUnlockClick('intermediate')}
+                  className="bg-skillsprint-500 hover:bg-skillsprint-600 text-white"
+                >
+                  Unlock for ₹49
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
-        {/* Advanced Level */}
+        {/* Advanced Level - Requires payment */}
         <TabsContent value="advanced" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-start">
+          {isLevelAccessible('advanced') ? (
+            <Card>
+              <CardHeader>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <Badge variant="outline" className="mb-2 bg-purple-50 text-purple-700 border-purple-200">
+                      Advanced Level
+                    </Badge>
+                    <CardTitle className="text-2xl">Mastering Full Stack Development</CardTitle>
+                  </div>
+                  <div className="flex items-center text-gray-500 dark:text-gray-400">
+                    <Clock size={18} className="mr-1" />
+                    <span>Estimated: 12-16 weeks</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
                 <div>
-                  <Badge variant="outline" className="mb-2 bg-purple-50 text-purple-700 border-purple-200">
-                    Advanced Level
-                  </Badge>
-                  <CardTitle className="text-2xl">Mastering Full Stack Development</CardTitle>
+                  <h3 className="text-lg font-semibold mb-2">Key Concepts to Learn</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                      <li>Advanced React patterns</li>
+                      <li>Performance optimization</li>
+                      <li>TypeScript</li>
+                      <li>GraphQL</li>
+                      <li>Testing (Jest, React Testing Library)</li>
+                    </ul>
+                    <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
+                      <li>Microservices architecture</li>
+                      <li>CI/CD pipelines</li>
+                      <li>Docker and containerization</li>
+                      <li>Cloud deployment (AWS/GCP/Azure)</li>
+                      <li>Security best practices</li>
+                    </ul>
+                  </div>
                 </div>
-                <div className="flex items-center text-gray-500 dark:text-gray-400">
-                  <Clock size={18} className="mr-1" />
-                  <span>Estimated: 12-16 weeks</span>
+                
+                <div className="text-center py-4">
+                  <Badge variant="outline" className="mb-2">Preview</Badge>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    The advanced section covers topics like TypeScript, GraphQL, testing, microservices, containerization, and cloud deployment.
+                  </p>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Key Concepts */}
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Key Concepts to Learn</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-                    <li>Advanced React patterns</li>
-                    <li>Performance optimization</li>
-                    <li>TypeScript</li>
-                    <li>GraphQL</li>
-                    <li>Testing (Jest, React Testing Library)</li>
-                  </ul>
-                  <ul className="list-disc list-inside space-y-1 text-gray-700 dark:text-gray-300">
-                    <li>Microservices architecture</li>
-                    <li>CI/CD pipelines</li>
-                    <li>Docker and containerization</li>
-                    <li>Cloud deployment (AWS/GCP/Azure)</li>
-                    <li>Security best practices</li>
-                  </ul>
-                </div>
-              </div>
-              
-              <div className="text-center py-4">
-                <Badge variant="outline" className="mb-2">Preview</Badge>
-                <p className="text-gray-500 dark:text-gray-400">
-                  The advanced section covers topics like TypeScript, GraphQL, testing, microservices, containerization, and cloud deployment.
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-16">
+                <Lock size={64} className="text-gray-400 mb-4" />
+                <h2 className="text-2xl font-bold mb-2 text-center">Unlock Advanced Level</h2>
+                <p className="text-gray-600 dark:text-gray-400 text-center mb-6 max-w-md">
+                  Master Full Stack Development with advanced concepts, TypeScript, GraphQL, testing, and cloud deployment techniques for just ₹49.
                 </p>
-              </div>
-            </CardContent>
-          </Card>
+                <Button 
+                  onClick={() => handleUnlockClick('advanced')}
+                  className="bg-skillsprint-500 hover:bg-skillsprint-600 text-white"
+                >
+                  Unlock for ₹49
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
     </div>

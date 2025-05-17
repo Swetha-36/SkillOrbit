@@ -2,15 +2,13 @@
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Code, Server, Shield, Brain, Database, Figma, Terminal, Globe, FileCode, Laptop } from 'lucide-react';
-import { Toggle } from '@/components/ui/toggle';
+import { Code, Server, Shield, Brain, Database, Figma } from 'lucide-react';
 
 interface Domain {
   id: string;
   name: string;
   icon: React.ElementType;
   description: string;
-  levels: number;
 }
 
 interface DomainSelectorProps {
@@ -19,78 +17,43 @@ interface DomainSelectorProps {
 
 const DomainSelector = ({ onDomainSelect }: DomainSelectorProps) => {
   const [selectedDomain, setSelectedDomain] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
   const domains: Domain[] = [
     {
-      id: 'frontend',
-      name: 'Frontend Development',
-      icon: Globe,
-      description: 'HTML, CSS, JavaScript, React, Vue, Angular',
-      levels: 5
+      id: 'web-dev',
+      name: 'Web Development',
+      icon: Code,
+      description: 'Frontend, Backend, Full Stack'
     },
     {
       id: 'backend',
       name: 'Backend Engineering',
       icon: Server,
-      description: 'APIs, Databases, Server Logic, Cloud',
-      levels: 5
-    },
-    {
-      id: 'fullstack',
-      name: 'Full Stack Development',
-      icon: Laptop,
-      description: 'Frontend + Backend, DevOps, Architecture',
-      levels: 6
+      description: 'APIs, Databases, Server Logic'
     },
     {
       id: 'ai-ml',
       name: 'AI & Machine Learning',
       icon: Brain,
-      description: 'Neural Networks, NLP, Computer Vision, Data Science',
-      levels: 5
+      description: 'Neural Networks, NLP, Computer Vision'
     },
     {
       id: 'cybersecurity',
       name: 'Cybersecurity',
       icon: Shield,
-      description: 'Network Security, Encryption, Ethical Hacking',
-      levels: 4
+      description: 'Network Security, Encryption, Ethical Hacking'
     },
     {
       id: 'data',
       name: 'Data Science',
       icon: Database,
-      description: 'Analysis, Visualization, Big Data, Statistics',
-      levels: 5
+      description: 'Analysis, Visualization, Big Data'
     },
     {
       id: 'ui-ux',
       name: 'UI/UX Design',
       icon: Figma,
-      description: 'User Experience, Interface Design, Prototyping',
-      levels: 4
-    },
-    {
-      id: 'devops',
-      name: 'DevOps',
-      icon: Terminal,
-      description: 'CI/CD, Docker, Kubernetes, Cloud Infrastructure',
-      levels: 5
-    },
-    {
-      id: 'mobile',
-      name: 'Mobile Development',
-      icon: FileCode,
-      description: 'Android, iOS, React Native, Flutter',
-      levels: 5
-    },
-    {
-      id: 'web3',
-      name: 'Web3 & Blockchain',
-      icon: Code,
-      description: 'Smart Contracts, DApps, Cryptocurrencies',
-      levels: 4
+      description: 'User Experience, Interface Design, Prototyping'
     },
   ];
 
@@ -100,77 +63,32 @@ const DomainSelector = ({ onDomainSelect }: DomainSelectorProps) => {
   };
 
   return (
-    <Card className="mb-8 border-skillsprint-200/50 dark:border-gray-700 dark:bg-gray-800">
+    <Card className="mb-8 border-skillsprint-200/50">
       <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold dark:text-white">Choose Your Learning Domain</h2>
-          <div className="flex items-center space-x-2">
-            <Toggle 
-              pressed={viewMode === 'grid'} 
-              onPressedChange={() => setViewMode('grid')}
-              aria-label="Grid view"
-              variant="outline"
-              size="sm"
-            >
-              <div className="grid grid-cols-2 gap-0.5 h-3 w-3">
-                <div className="bg-current rounded-sm"></div>
-                <div className="bg-current rounded-sm"></div>
-                <div className="bg-current rounded-sm"></div>
-                <div className="bg-current rounded-sm"></div>
-              </div>
-            </Toggle>
-            <Toggle 
-              pressed={viewMode === 'list'} 
-              onPressedChange={() => setViewMode('list')}
-              aria-label="List view"
-              variant="outline"
-              size="sm"
-            >
-              <div className="flex flex-col gap-0.5 h-3.5 w-3.5">
-                <div className="h-0.5 w-full bg-current rounded-sm"></div>
-                <div className="h-0.5 w-full bg-current rounded-sm"></div>
-                <div className="h-0.5 w-full bg-current rounded-sm"></div>
-              </div>
-            </Toggle>
-          </div>
-        </div>
-        
-        <p className="text-gray-600 mb-6 dark:text-gray-300">
+        <h2 className="text-xl font-bold mb-4">Choose Your Learning Domain</h2>
+        <p className="text-gray-600 mb-6">
           Select a domain to see our recommended learning roadmaps
         </p>
         
-        <div className={viewMode === 'grid' 
-          ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" 
-          : "flex flex-col gap-2"
-        }>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {domains.map((domain) => (
             <Button
               key={domain.id}
               variant={selectedDomain === domain.id ? "default" : "outline"}
-              className={`h-auto ${viewMode === 'grid' ? 'flex flex-col items-start' : 'flex items-center justify-between'} p-4 border ${
+              className={`h-auto flex flex-col items-start p-4 border ${
                 selectedDomain === domain.id 
-                  ? 'bg-skillsprint-500 text-white dark:bg-skillsprint-600' 
-                  : 'hover:border-skillsprint-300 hover:bg-skillsprint-50 dark:hover:bg-gray-700 dark:border-gray-600'
+                  ? 'bg-skillsprint-500 text-white' 
+                  : 'hover:border-skillsprint-300 hover:bg-skillsprint-50'
               }`}
               onClick={() => handleSelect(domain.id)}
             >
-              <div className={`flex items-center ${viewMode === 'grid' ? 'w-full mb-2' : ''}`}>
-                <domain.icon className={`mr-2 h-5 w-5 ${selectedDomain === domain.id ? 'text-white' : 'text-skillsprint-500 dark:text-skillsprint-400'}`} />
+              <div className="flex items-center w-full mb-2">
+                <domain.icon className={`mr-2 h-5 w-5 ${selectedDomain === domain.id ? 'text-white' : 'text-skillsprint-500'}`} />
                 <span className="font-medium text-left">{domain.name}</span>
               </div>
-              
-              {viewMode === 'grid' ? (
-                <span className={`text-xs text-left ${selectedDomain === domain.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
-                  {domain.description}
-                </span>
-              ) : (
-                <div className="flex items-center">
-                  <span className={`text-xs ${selectedDomain === domain.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'} mr-2`}>
-                    {domain.levels} levels
-                  </span>
-                  <div className={`h-2 w-2 rounded-full ${selectedDomain === domain.id ? 'bg-white' : 'bg-skillsprint-500 dark:bg-skillsprint-400'}`}></div>
-                </div>
-              )}
+              <span className={`text-xs text-left ${selectedDomain === domain.id ? 'text-white/80' : 'text-gray-500'}`}>
+                {domain.description}
+              </span>
             </Button>
           ))}
         </div>

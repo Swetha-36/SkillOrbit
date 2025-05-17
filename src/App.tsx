@@ -14,7 +14,6 @@ import HackBuddy from "./pages/HackBuddy";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Roadmap from "./pages/Roadmap";
-import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +31,6 @@ const App = () => (
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/hackbuddy" element={<HackBuddy />} />
           <Route path="/roadmap" element={<Roadmap />} />
-          <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="*" element={<NotFound />} />
